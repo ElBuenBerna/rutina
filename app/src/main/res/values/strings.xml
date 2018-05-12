@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">My Application</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="rutina_cancelar_titulo_dialogo">¿Terminar entrenamiento?</string>
+    <string name="mensaje_aliento">No te des por vencido, ¡tú puedes!</string>
+    <string name="rutina_cancelar_boton">Terminar</string>
+    <string name="rutina_continuar_boton">Continuar</string>
+    <string name="terminar_rutina">Terminar Rutina</string>
+    <string name="descanso_rutina">Descanso</string>
+
+</resources>
