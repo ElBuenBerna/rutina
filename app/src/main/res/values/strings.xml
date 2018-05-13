@@ -9,5 +9,6 @@
     <string name="rutina_continuar_boton">Continuar</string>
     <string name="terminar_rutina">Terminar Rutina</string>
     <string name="descanso_rutina">Descanso</string>
+    <string name="rutina_terminada">Rutina Terminada</string>
 
 </resources>

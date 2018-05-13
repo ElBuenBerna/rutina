@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean setTerminado;
     private boolean descansando;
 
-
+    private static final long EXERCISE_TIME = 6000;
     private long mTimeLeftInMillis;
     private int i = 0;
     private int reps;
@@ -61,12 +61,9 @@ public class MainActivity extends AppCompatActivity {
     private Ejercicio ex2 = new Ejercicio("1", "Lagartijas", "ALSDJF", "ASLDf", "LASDFJ");
     private Ejercicio ex3 = new Ejercicio("2", "Abdominales", "ALSDJF", "ASLDf", "LASDFJ");
 
-    private DetallesEjercicio dex1 = new DetallesEjercicio("0", 10, 2, 5);
-    private DetallesEjercicio dex2 = new DetallesEjercicio("1", 12, 3, 6);
-    private DetallesEjercicio dex3 = new DetallesEjercicio("2", 15, 4, 7);
-
-
-
+    private DetallesEjercicio dex1 = new DetallesEjercicio("0", 10, 2, 10);
+    private DetallesEjercicio dex2 = new DetallesEjercicio("1", 12, 3, 10);
+    private DetallesEjercicio dex3 = new DetallesEjercicio("2", 15, 4, 10);
 
     private String[] ejercicios = new String[]{"Saltos", "Descansa 5 segundos", "Press de Banca", "Descansa 5 segundos", "Bicep"};
     private long [] tiempos = new long[]{6000, 6000, 11000, 6000, 11000};
@@ -105,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
 
                 if(rutinaEmpezada){
                     pauseTimer();
-                    showDialog();
+                    showDialogCancelarRutina();
                 } else {
                     i = 0;
                     mTimerRunning = true;
@@ -114,10 +111,10 @@ public class MainActivity extends AppCompatActivity {
                     nombre = arrEjercicio.get(i).getNombre();
                     reps = arrDetEjercicio.get(i).getReps();
                     sets = arrDetEjercicio.get(i).getSets();
-                    descanso = arrDetEjercicio.get(i).getDescansoSeg();
+                    descanso = arrDetEjercicio.get(i).getDescansoSeg() * 1000;
 
 
-                    progressCountDown.setMax(31000);//Treinta segundos cada set
+                    progressCountDown.setMax((int)EXERCISE_TIME);//Treinta segundos cada set
                     progressCountDown.setProgress(0);
 
                     empezarRutina.setText(R.string.terminar_rutina);
@@ -131,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
                     ejrcActual.setText(nombre);
                     repActual.setText(Integer.toString(reps));
                     setsRestantes.setText(Integer.toString(sets-1));
-                    mTimeLeftInMillis = 31000;
+                    mTimeLeftInMillis = EXERCISE_TIME;
                     setTerminado = true;
                     descansando = false;
                     startTimer();
@@ -170,20 +167,21 @@ public class MainActivity extends AppCompatActivity {
             public void onFinish() {
                 progressCountDown.setProgress(0);
                 if(sets==0){
+                    Log.e("Ejercicios", "EjercicioAcabado");
                     i++;
                     ejrcAnterior.setText(nombre);
                     repAnterior.setText(Integer.toString(reps));
                     try{
-                        progressCountDown.setMax(31000);
+                        progressCountDown.setMax((int)EXERCISE_TIME);
                         nombre = arrEjercicio.get(i).getNombre();
                         reps = arrDetEjercicio.get(i).getReps();
                         sets = arrDetEjercicio.get(i).getSets();
-                        descanso = arrDetEjercicio.get(i).getDescansoSeg();
+                        descanso = arrDetEjercicio.get(i).getDescansoSeg() * 1000;
 
                         ejrcActual.setText(nombre);
                         repActual.setText(Integer.toString(reps));
                         setsRestantes.setText(Integer.toString(sets-1));
-                        mTimeLeftInMillis = 31000;
+                        mTimeLeftInMillis = EXERCISE_TIME;
                         try{
                             ejrcSiguiente.setText(arrEjercicio.get(i+1).getNombre());
                             repSiguiente.setText(Integer.toString(arrDetEjercicio.get(i+1).getReps()));
@@ -191,33 +189,39 @@ public class MainActivity extends AppCompatActivity {
                             ejrcSiguiente.setText("");
                             repSiguiente.setText("");
                         }
+                        progressCountDown.setMax((int)EXERCISE_TIME);
+                        setTerminado = true;
+                        descansando = false;
                         startTimer();
                     } catch (Exception e){
                         mTimerRunning = false;
                         mButtonStartPause.setVisibility(View.INVISIBLE);
                         mCountDownTimer.cancel();
+                        showDialogRutinaTerminada();
                     }
                 } else if(setTerminado){
+                    sets--;
                     Log.e("Ejercicios", "Si entró");
                     ejrcActual.setText(R.string.descanso_rutina);
                     repActual.setText("");
                     progressCountDown.setMax(descanso);
                     mTimeLeftInMillis = descanso;
                     descansando = true;
+                    setTerminado = false;
                     startTimer();
 
-                } else {
+                } else if(!setTerminado){
                     Log.e("Ejercicios", "ELSE");
                     setsRestantes.setText(Integer.toString(sets-1));
-                    progressCountDown.setMax(31000);
-                    mTimeLeftInMillis = 31000;
+                    progressCountDown.setMax((int)EXERCISE_TIME);
+                    mTimeLeftInMillis = EXERCISE_TIME;
                     ejrcActual.setText(nombre);
                     repActual.setText(Integer.toString(reps));
                     setTerminado = true;
-                    sets--;
                     descansando = false;
                     startTimer();
                 }
+
 
 
             }
@@ -243,7 +247,7 @@ public class MainActivity extends AppCompatActivity {
         if(descansando){
             progressCountDown.setProgress((int)(descanso - mTimeLeftInMillis));
         } else {
-            progressCountDown.setProgress((int)(31000 - mTimeLeftInMillis));
+            progressCountDown.setProgress((int)(EXERCISE_TIME - mTimeLeftInMillis));
         }
 
 
@@ -251,7 +255,12 @@ public class MainActivity extends AppCompatActivity {
         mTextViewCountDown.setText(timeLeftFormatted);
     }
 
-    public void showDialog(){
+    public void showDialogRutinaTerminada(){
+        DialogFragment dialogo = new DialogoRutinaTerminada();
+        dialogo.show(getSupportFragmentManager(), "rutina_terminada");
+    }
+
+    public void showDialogCancelarRutina(){
         DialogFragment dialogo = new DialogoCancelarRutina();
         dialogo.show(getSupportFragmentManager(), "cancelar_rutina");
     }
