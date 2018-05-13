@@ -11,4 +11,17 @@
     <string name="descanso_rutina">Descanso</string>
     <string name="rutina_terminada">Rutina Terminada</string>
 
+    <string name="nombre_rutina">Nombre Rutina</string>
+    <string name="categoria">Categoría</string>
+    <string name="url_imagen">URL Imagen</string>
+    <string name="descripcion">Descripción</string>
+    <string name="sets">Sets</string>
+    <string name="reps">Reps</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="guardar">Guardar</string>
+    <string name="siguiente">Siguiente</string>
+
+
+
+
 </resources>
